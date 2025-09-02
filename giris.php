@@ -76,11 +76,11 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
                     </div>
                     <form class="user" action="islemler/islem.php" method="POST">
                         <div class="form-group">
-                            <input name="kul_mail" required type="text" class="form-control form-control-user"
+                            <input name="email" required type="text" class="form-control form-control-user"
                                 id="exampleInputEmail" aria-describedby="emailHelp" placeholder=" E-Mail ">
                         </div>
                         <div class="form-group">
-                            <input type="password" required name="kul_sifre" class="form-control form-control-user"
+                            <input type="password" required name="password" class="form-control form-control-user"
                                 id="exampleInputPassword" placeholder="Şifre">
                         </div>
                         <button name="oturumac" type="submit"
