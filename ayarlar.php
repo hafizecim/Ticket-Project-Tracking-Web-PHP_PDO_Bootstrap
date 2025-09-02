@@ -1,5 +1,11 @@
 <?php include 'header.php'; 
 
+
+// veri tabaınından veri çekme işlemi
+$ayarsor=$db->prepare("SELECT * FROM sites");
+$ayarsor->execute();
+$ayarcek=$ayarsor->fetch(PDO::FETCH_ASSOC);
+
 ?>
 
 <div class="container-fluid">
@@ -23,14 +29,14 @@
 
             <form action="islemler/islem.php" method="POST" accept-charset="utf-8">
                 <div class="form-group">
-                    <label for="siteBaslik">Sitenizin Başlığı</label>
-                    <input class="form-control" id="siteBaslik" type="text" name="site_baslik" value="<?php echo $ayarcek['site_baslik'] ?>">
+                    <label for="siteTitle">Sitenizin Başlığı</label>
+                    <input class="form-control" id="siteTitle" type="text" name="site_title" value="<?php echo $ayarcek['site_title'] ?>">
                 </div>
                 <div class="form-group">
-                    <label for="siteAciklama">Sitenizin Açıklaması</label>
-                    <textarea class="form-control" id="siteAciklama" name="site_aciklama" rows="3"><?php echo $ayarcek['site_aciklama']; ?></textarea>
-                    <label for="siteSahibi">Site Sahibi</label>
-                    <input class="form-control" id="siteSahibi" type="text" name="site_sahibi" value="<?php echo $ayarcek['site_sahibi'] ?>">
+                    <label for="siteDescription">Sitenizin Açıklaması</label>
+                    <textarea class="form-control" id="siteDescription" name="site_description" rows="3"><?php echo $ayarcek['site_description']; ?></textarea>
+                    <label for="siteOwnerName">Site Sahibi</label>
+                    <input class="form-control" id="siteOwnerName" type="text" name="site_owner_name" value="<?php echo $ayarcek['site_owner_name'] ?>">
                 </div>
                 <button type="submit" class="btn btn-primary mt-3" name="ayarkaydet">Kaydet</button>
             </form>

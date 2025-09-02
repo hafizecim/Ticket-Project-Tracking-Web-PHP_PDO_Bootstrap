@@ -1,3 +1,7 @@
+<?php
+include 'islemler/baglan.php'
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -361,5 +365,5 @@
 
                 </nav>
                 <!-- End of Topbar -->
-            </div>
+            <!-- </div> -->
             <!-- End of Main Content -->
