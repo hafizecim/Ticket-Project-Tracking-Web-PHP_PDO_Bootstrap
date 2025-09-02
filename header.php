@@ -1,5 +1,31 @@
 <?php
-include 'islemler/baglan.php'
+include 'islemler/baglan.php';
+
+ob_start();
+session_start();
+
+$ayarsor = $db->prepare("SELECT * FROM sites");
+$ayarsor->execute();
+$ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
+
+if (empty($_SESSION['email'])){
+    header("location:giris.php");
+    exit; // exit in altındaki hiçbir kod çalışmaz
+}else{
+     $kullanicisor=$db->prepare("SELECT * FROM users WHERE email=:mail");
+    $kullanicisor->execute(array(
+      'mail'=> $_SESSION['email']
+    ));
+     $sonuc=$kullanicisor->rowCount();
+     
+     if ($sonuc==0) {
+        header("location:giris.php");
+     }
+
+}
+
+
+
 ?>
 
 <!DOCTYPE html>
