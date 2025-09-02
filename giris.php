@@ -1,4 +1,5 @@
-<?php include 'islemler/baglan.php';
+<?php 
+include 'islemler/baglan.php';
 $ayarsor = $db->prepare("SELECT * FROM sites");
 $ayarsor->execute();
 $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
@@ -13,9 +14,8 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="<?php echo $ayarcek['site_description'] ?>">
-    <meta name="author" content="<?php echo $ayarcek['site_owner_user_id'] ?>">
+    <meta name="author" content="<?php echo $ayarcek['site_owner_name'] ?>">
     <!-- <link rel="shortcut icon" type="image/png" href="<?php echo $ayarcek['site_logo'] ?>"> -->
-
 
     <title><?php echo $ayarcek['site_title'] ?></title>
 
@@ -31,7 +31,6 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
     <style>
         body {
             background: linear-gradient(to right, #4e73df, #ffffff);
-            /* Mavi tonlarında gradyan */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -56,11 +55,8 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
 
         .btn-gradient {
             background: linear-gradient(to right,  #829be9ff, #244792ff);
-            /* Aynı gradyanı butona uygula */
             color: #fff;
-            /* Yazı rengini beyaz yap */
             border: none;
-            /* Varsayılan kenarlığı kaldır */
         }
     </style>
 
@@ -77,7 +73,7 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
                     <form class="user" action="islemler/islem.php" method="POST">
                         <div class="form-group">
                             <input name="kul_mail" required type="text" class="form-control form-control-user"
-                                id="exampleInputEmail" aria-describedby="emailHelp" placeholder=" E-Mail ">
+                                id="exampleInputEmail" aria-describedby="emailHelp" placeholder="E-Mail">
                         </div>
                         <div class="form-group">
                             <input type="password" required name="kul_sifre" class="form-control form-control-user"
@@ -86,10 +82,12 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
                         <button name="oturumac" type="submit"
                             class="btn text-white btn-gradient btn-user btn-block">Oturum Aç</button>
                         <hr>
-                        <p class="text-muted text-center"><?php echo $ayarcek['site_sahibi'] ?></p>
+                        <p class="text-muted text-center"><?php echo $ayarcek['site_owner_name'] ?></p>
                     </form>
                 </div>
             </div>
         </div>
 
     </div>
+</body>
+</html>
