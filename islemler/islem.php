@@ -46,4 +46,34 @@ if (isset($_POST['oturumac'])) {
 /*Oturum Açma İşlemi Giriş*/
 /*******************************************************************************/
 
+
+/*Proje ekle İşlemi Giriş*/
+/*******************************************************************************/
+if (isset($_POST['projeekle'])) { // PROJE EKLE FORMUNDAN GELİYORSAN
+    $projeekle = $db-> prepare("INSERT INTO projects SET 
+    project_name=:project_name,
+    project_estimated_completion_date=:project_estimated_completion_date,
+    project_status=:project_status,
+    project_priority=:project_priority,
+    project_description=:project_description,
+    project_created_at=NOW()");  // 🔥 tarih otomatik ekleniyor
+    $projeekle->execute(array(
+        'project_name' => $_POST['project_name'],
+        'project_estimated_completion_date' => $_POST['project_estimated_completion_date'],
+        'project_status' => $_POST['project_status'],
+        'project_priority' => $_POST['project_priority'],
+        'project_description' => $_POST['project_description'],
+        
+    ));
+
+    if ($projeekle) {
+        header("location:../index.php");
+    } else {
+        echo "Başarız";
+        exit;
+    }
+}
+/*******************************************************************************/
+/*Proje ekle İşlemi Giriş*/
+
 ?>
