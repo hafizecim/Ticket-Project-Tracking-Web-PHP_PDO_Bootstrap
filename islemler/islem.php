@@ -8,44 +8,23 @@ session_start();
 
 if (isset($_POST['ayarkaydet'])) {  // eğer gele değerler doluysa
     // veri tabanı kayıt işlemi
-    $ayarkaydet = $db->prepare("UPDATE ayarlar SET 
-                                        site_baslik=:site_baslik, 
-                                        site_aciklama=:site_aciklama,
-                                        site_sahibi=:site_sahibi ");
+    $ayarkaydet = $db->prepare("UPDATE sites SET 
+                                        site_title=:site_title, 
+                                        site_description=:site_description,
+                                        site_owner_name=:site_owner_name ");
 
     // güvenlik için 
     $ayarkaydet->execute(array(
-        'site_baslik' => $_POST['site_baslik'],
-        'site_aciklama' => $_POST['site_aciklama'],
-        'site_sahibi' => $_POST['site_sahibi']
+        'site_title' => $_POST['site_title'],
+        'site_description' => $_POST['site_description'],
+        'site_owner_name' => $_POST['site_owner_name']
 
     ));
 
 }
 
-//Site ayarlarının veri tabanı çekme işlemi
-$ayarsor = $db->prepare("SELECT * FROM ayarlar");
-$ayarsor->execute();
-$ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
 
-if (isset($_GET["api_key"])) {
-    if ($_GET["api_key"] == $api_key) {
-        $api = true;
-    } else {
-        echo json_encode(['durum' => 'no', 'mesaj' => "API Bilgileriniz hatalıdır."]);
-        $api = false;
-    }
-} else {
-    $api = true;
-}
 
-/*
-// DEBUG: Flutter'dan gelen POST ve GET verilerini göster
-var_dump($_POST);
-var_dump($_GET);
-exit; // Kod burda durur, geri kalan sorgular çalışmaz
-
-*/
 
 /********************************************************************************/
 /*Oturum Açma İşlemi Giriş*/
@@ -55,7 +34,7 @@ if (isset($_POST['oturumac'])) {
         $kul_mail = guvenlik($_POST['kul_mail']);
         //$kul_sifre = md5($_POST['kul_sifre']);
         $kul_sifre = $_POST['kul_sifre']; // doğrudan gelen şifreyi kullan
-        $kullanicisor = $db->prepare("SELECT * FROM kullanici WHERE kul_mail=:mail and kul_sifre=:sifre");
+        $kullanicisor = $db->prepare("SELECT * FROM users WHERE email=:mail AND password=:sifre");
         $kullanicisor->execute(array(
             'mail' => $kul_mail,
             'sifre' => $kul_sifre
@@ -118,49 +97,21 @@ if (isset($_POST['oturumac'])) {
 
 /*Proje ekle İşlemi Giriş*/
 /*******************************************************************************/
-if (isset($_POST['projeekle'])) { // PROJE EKEL FORMUNDAN GELİYORSAN
-    $projeekle = $db->prepare("INSERT INTO proje SET 
-    proje_baslik=:baslik,
-    proje_teslim_tarihi=:teslim_tarih,
-    proje_aciliyet=:aciliyet,
-    proje_durum=:durum,
-    proje_detay=:detay");
+if (isset($_POST['projeekle'])) {
+    $projeekle = $db->prepare("INSERT INTO projects SET 
+        project_title=:title,
+        project_description=:description,
+        project_status=:status,
+        project_priority=:priority,
+        assigned_to_user_id=:assigned_to
+    ");
     $projeekle->execute(array(
-        'baslik' => guvenlik($_POST['proje_baslik']),
-        'teslim_tarih' => guvenlik($_POST['proje_teslim_tarihi']),
-        'aciliyet' => guvenlik($_POST['proje_aciliyet']),
-        'durum' => guvenlik($_POST['proje_durum']),
-        'detay' => guvenlik($_POST['proje_detay'])
+        'title' => guvenlik($_POST['project_title']),
+        'description' => guvenlik($_POST['project_description']),
+        'status' => guvenlik($_POST['project_status']),
+        'priority' => guvenlik($_POST['project_priority']),
+        'assigned_to' => guvenlik($_POST['assigned_to_user_id'])
     ));
-
-
-    $yuklemeklasoru = '../dosyalar';
-    @$gecici_isim = $_FILES['proje_dosya']["tmp_name"];
-    @$dosya_ismi = $_FILES['proje_dosya']["name"];
-    $benzersizsayi1 = rand(100000, 999999);
-    $isim = tr_degistirme($benzersizsayi1 . $_POST['proje_baslik'] . $dosya_ismi);
-    $resim_yolu = substr($yuklemeklasoru, 3) . "/" . $isim;
-    @move_uploaded_file($gecici_isim, "$yuklemeklasoru/$isim");
-
-    $son_eklenen_id = $db->lastInsertId();
-
-    $dosyayukleme = $db->prepare("UPDATE proje SET
-     dosya_yolu=:dosya_yolu   WHERE proje_id=:proje_id ");
-
-    $yukleme = $dosyayukleme->execute(array(
-        'dosya_yolu' => $resim_yolu,
-        'proje_id' => $son_eklenen_id
-    ));
-
-
-
-
-    if ($projeekle) {
-        header("location:../index.php");
-    } else {
-        echo "Başarız";
-        exit;
-    }
 }
 /*******************************************************************************/
 /*Proje ekle İşlemi Giriş*/
@@ -168,50 +119,25 @@ if (isset($_POST['projeekle'])) { // PROJE EKEL FORMUNDAN GELİYORSAN
 
 /*Proje duzenle İşlemi Giriş*/
 /*******************************************************************************/
-if (isset($_POST['projeduzenle'])) { // PROJE EKEL FORMUNDAN GELİYORSAN
-    $projeduzenle = $db->prepare("UPDATE proje SET 
-    proje_baslik=:baslik,
-    proje_teslim_tarihi=:teslim_tarih,
-    proje_aciliyet=:aciliyet,
-    proje_durum=:durum,
-    proje_detay=:detay
-    WHERE proje_id=:proje_id"
-    );
+if (isset($_POST['projeduzenle'])) {
+    $projeduzenle = $db->prepare("UPDATE projects SET
+        project_title=:title,
+        project_description=:description,
+        project_status=:status,
+        project_priority=:priority,
+        assigned_to_user_id=:assigned_to
+        WHERE project_id=:project_id
+    ");
     $projeduzenle->execute(array(
-        'baslik' => $_POST['proje_baslik'],
-        'teslim_tarih' => $_POST['proje_teslim_tarihi'],
-        'aciliyet' => $_POST['proje_aciliyet'],
-        'durum' => $_POST['proje_durum'],
-        'detay' => $_POST['proje_detay'],
-        'proje_id' => $_POST['proje_id']
+        'title' => $_POST['project_title'],
+        'description' => $_POST['project_description'],
+        'status' => $_POST['project_status'],
+        'priority' => $_POST['project_priority'],
+        'assigned_to' => $_POST['assigned_to_user_id'],
+        'project_id' => $_POST['project_id']
     ));
-
-
-    $yuklemeklasoru = '../dosyalar';
-    @$gecici_isim = $_FILES['proje_dosya']["tmp_name"];
-    @$dosya_ismi = $_FILES['proje_dosya']["name"];
-    $benzersizsayi1 = rand(100000, 999999);
-    $isim = tr_degistirme($benzersizsayi1 . $_POST['proje_baslik'] . $dosya_ismi);
-    $resim_yolu = substr($yuklemeklasoru, 3) . "/" . $isim;
-    @move_uploaded_file($gecici_isim, "$yuklemeklasoru/$isim");
-
-
-    $dosyayukleme = $db->prepare("UPDATE proje SET
-     dosya_yolu=:dosya_yolu    WHERE proje_id=:proje_id ");
-
-    $yukleme = $dosyayukleme->execute(array(
-        'dosya_yolu' => $resim_yolu,
-        'proje_id' => $_POST['proje_id']
-    ));
-
-
-    if ($projeduzenle) {
-        header("location:../index.php");
-    } else {
-        echo "Başarız";
-        exit;
-    }
 }
+
 /*******************************************************************************/
 /*Proje duzenle İşlemi Giriş*/
 
@@ -220,19 +146,10 @@ if (isset($_POST['projeduzenle'])) { // PROJE EKEL FORMUNDAN GELİYORSAN
 /********************************************************************************/
 
 if (isset($_POST['projesilme'])) {
-    $sil = $db->prepare("DELETE from proje where proje_id=:proje_id");
-    $kontrol = $sil->execute(array(
-        'proje_id' => $_POST['proje_id']
-    ));
-
-    if ($kontrol) {
-        //echo "kayıt başarılı";
-        header("location:../projeler.php");
-    } else {
-        echo "kayıt başarısız";
-        exit;
-    }
+    $sil = $db->prepare("DELETE FROM projects WHERE project_id=:project_id");
+    $sil->execute(array('project_id' => $_POST['project_id']));
 }
+
 
 /********************************************************************************/
 /*Proje silme İşlemi Giriş*/
@@ -240,62 +157,26 @@ if (isset($_POST['projesilme'])) {
 /*Sipariş ekle İşlemi Giriş*/
 /********************************************************************************/
 
-if (isset($_POST['siparisekle'])) {
-    $siparisekle = $db->prepare("INSERT INTO siparis SET
-    musteri_isim=:isim,
-    musteri_mail=:mail,
-    musteri_telefon=:telefon,
-    sip_baslik=:baslik,
-    sip_teslim_tarihi=:teslim_tarihi,
-    sip_aciliyet=:aciliyet,
-    sip_durum=:durum,
-    sip_ucret=:ucret,
-    sip_detay=:detay
-    /*yuzde=:yuzde,*/
-    /*sip_baslama_tarih=:sip_baslama_tarih  */
+if (isset($_POST['ticketekle'])) {
+    $ticketekle = $db->prepare("INSERT INTO tickets SET
+        project_id=:project_id,
+        ticket_title=:title,
+        ticket_description=:description,
+        ticket_status=:status,
+        ticket_priority=:priority,
+        assigned_to_user_id=:assigned_to
     ");
-
-    $siparisekle->execute(array(
-        'isim' => $_POST['musteri_isim'],
-        'mail' => $_POST['musteri_mail'],
-        'telefon' => $_POST['musteri_telefon'],
-        'baslik' => $_POST['sip_baslik'],
-        'teslim_tarihi' => $_POST['sip_teslim_tarihi'],
-        'aciliyet' => $_POST['sip_aciliyet'],
-        'durum' => $_POST['sip_durum'],
-        'ucret' => $_POST['sip_ucret'],
-        'detay' => $_POST['sip_detay']
-        /*'yuzde' => $_POST['yuzde'], */
-        /*'sip_baslama_tarih' => $_POST['sip_baslama_tarih']*/
+    $ticketekle->execute(array(
+        'project_id' => $_POST['project_id'],
+        'title' => $_POST['ticket_title'],
+        'description' => $_POST['ticket_description'],
+        'status' => $_POST['ticket_status'],
+        'priority' => $_POST['ticket_priority'],
+        'assigned_to' => $_POST['assigned_to_user_id']
     ));
-
-
-    $yuklemeklasoru = '../dosyalar';
-    @$gecici_isim = $_FILES['siparis_dosya']["tmp_name"];
-    @$dosya_ismi = $_FILES['siparis_dosya']["name"];
-    $benzersizsayi1 = rand(100000, 999999);
-    $isim = tr_degistirme($benzersizsayi1 . $_POST['sip_baslik'] . $dosya_ismi);
-    $resim_yolu = substr($yuklemeklasoru, 3) . "/" . $isim;
-    @move_uploaded_file($gecici_isim, "$yuklemeklasoru/$isim");
-
-    $son_eklenen_id = $db->lastInsertId();
-
-    $dosyayukleme = $db->prepare("UPDATE siparis SET
-     dosya_yolu=:dosya_yolu   WHERE sip_id=:sip_id ");
-
-    $yukleme = $dosyayukleme->execute(array(
-        'dosya_yolu' => $resim_yolu,
-        'sip_id' => $son_eklenen_id
-    ));
-
-    if ($siparisekle) {
-        //echo "kayıt başarılı";
-        header("location:../index.php");
-    } else {
-        echo "kayıt başarısız";
-        exit;
-    }
 }
+
+
 
 /********************************************************************************/
 /*Sipariş ekle İşlemi Giriş*/
@@ -305,58 +186,28 @@ if (isset($_POST['siparisekle'])) {
 /*Sipariş düzenle İşlemi Giriş*/
 /********************************************************************************/
 
-if (isset($_POST['siparisduzenle'])) {
-    $siparisduzenle = $db->prepare("UPDATE siparis SET
-        musteri_isim=:isim,
-        musteri_mail=:mail,
-        musteri_telefon=:telefon,
-        sip_baslik=:baslik,
-        sip_teslim_tarihi=:teslim_tarihi,
-        sip_aciliyet=:aciliyet,
-        sip_durum=:durum,
-        sip_ucret=:ucret,
-        sip_detay=:detay
-        WHERE sip_id=:sip_id
+if (isset($_POST['ticketduzenle'])) {
+    $ticketduzenle = $db->prepare("UPDATE tickets SET
+        project_id=:project_id,
+        ticket_title=:title,
+        ticket_description=:description,
+        ticket_status=:status,
+        ticket_priority=:priority,
+        assigned_to_user_id=:assigned_to
+        WHERE ticket_id=:ticket_id
     ");
-
-    $siparisduzenle->execute(array(
-        'isim' => $_POST['musteri_isim'],
-        'mail' => $_POST['musteri_mail'],
-        'telefon' => $_POST['musteri_telefon'],
-        'baslik' => $_POST['sip_baslik'],
-        'teslim_tarihi' => $_POST['sip_teslim_tarihi'],
-        'aciliyet' => $_POST['sip_aciliyet'],
-        'durum' => $_POST['sip_durum'],
-        'ucret' => $_POST['sip_ucret'],
-        'detay' => $_POST['sip_detay'],
-        'sip_id' => $_POST['sip_id']  // HIDDEN INPUT’TAN GELİYOR 
+    $ticketduzenle->execute(array(
+        'project_id' => $_POST['project_id'],
+        'title' => $_POST['ticket_title'],
+        'description' => $_POST['ticket_description'],
+        'status' => $_POST['ticket_status'],
+        'priority' => $_POST['ticket_priority'],
+        'assigned_to' => $_POST['assigned_to_user_id'],
+        'ticket_id' => $_POST['ticket_id']
     ));
-
-
-    $yuklemeklasoru = '../dosyalar';
-    @$gecici_isim = $_FILES['siparis_dosya']["tmp_name"];
-    @$dosya_ismi = $_FILES['siparis_dosya']["name"];
-    $benzersizsayi1 = rand(100000, 999999);
-    $isim = tr_degistirme($benzersizsayi1 . $_POST['sip_baslik'] . $dosya_ismi);
-    $resim_yolu = substr($yuklemeklasoru, 3) . "/" . $isim;
-    @move_uploaded_file($gecici_isim, "$yuklemeklasoru/$isim");
-
-
-    $dosyayukleme = $db->prepare("UPDATE siparis SET
-     dosya_yolu=:dosya_yolu   WHERE sip_id=:sip_id ");
-
-    $yukleme = $dosyayukleme->execute(array(
-        'dosya_yolu' => $resim_yolu,
-        'sip_id' => $_POST['sip_id']
-    ));
-
-    if ($siparisduzenle) {
-        header("location:../index.php");
-    } else {
-        echo "Sipariş güncelleme başarısız!";
-        exit;
-    }
 }
+
+
 
 /********************************************************************************/
 /*Sipariş düzenle İşlemi Çıkış*/
@@ -366,106 +217,12 @@ if (isset($_POST['siparisduzenle'])) {
 /*Sipariş silme İşlemi Giriş*/
 /********************************************************************************/
 
-if (isset($_POST['siparissilme'])) {
-    $sil = $db->prepare("DELETE from siparis where sip_id=:sip_id");
-    $kontrol = $sil->execute(array(
-        'sip_id' => $_POST['sip_id']
-    ));
-
-    if ($kontrol) {
-        //echo "kayıt başarılı";
-        header("location:../siparisler.php");
-    } else {
-        echo "kayıt başarısız";
-        exit;
-    }
+if (isset($_POST['ticketsilme'])) {
+    $sil = $db->prepare("DELETE FROM tickets WHERE ticket_id=:ticket_id");
+    $sil->execute(array('ticket_id' => $_POST['ticket_id']));
 }
+
 
 /********************************************************************************/
 /*Sipariş silme İşlemi Giriş*/
 
-
-
-
-/************************** Flutter için ***********************************************/
-
-if (isset($_POST['projeleri_getir'])) {
-  if(!$api){
-    echo json_encode(['durum' => 'no','mesaj'=>'API Bilgileriniz Eksik']);
-  } else {
-
-    if (isset($_POST['sirala'])) {
-      $order="ORDER BY ".guvenlik($_POST['sirala']);
-    } else {
-      $order="";
-    }
-
-    if (isset($_POST['limit'])) {
-      $limit="LIMIT ".guvenlik($_POST['limit']);
-    } else {
-      $limit="";
-    }
-
-
-    $x=$db->prepare("SELECT * FROM proje $order $limit");
-    $x->execute();
-    $sonuc=$x->fetchAll(PDO::FETCH_ASSOC);
-    echo json_encode(['durum' => 'ok', 'projeler' => $sonuc],JSON_NUMERIC_CHECK | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
-
-  }
-}
-
-
-if (isset($_POST['siparisleri_getir'])) {
-  if(!$api){
-    echo json_encode(['durum' => 'no','mesaj'=>'API Bilgileriniz Eksik']);
-  } else {
-
-   if (isset($_POST['sirala'])) {
-    $order="ORDER BY ".guvenlik($_POST['sirala']);
-  } else {
-    $order="";
-  }
-
-  if (isset($_POST['limit'])) {
-    $limit="LIMIT ".guvenlik($_POST['limit']);
-  } else {
-    $limit="";
-  }
-
-  $x=$db->prepare("SELECT * FROM siparis $order $limit");
-  $x->execute();
-  $sonuc=$x->fetchAll(PDO::FETCH_ASSOC);
-  echo json_encode(['durum' => 'ok', 'siparisler' => $sonuc],JSON_NUMERIC_CHECK | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
-
-}
-}
-
-
-
-if (isset($_POST['projeguncelle'])) {
-    $projeduzenle = $db->prepare("UPDATE proje SET 
-        proje_baslik=:baslik,
-        proje_teslim_tarihi=:teslim_tarih,
-        proje_aciliyet=:aciliyet,
-        proje_durum=:durum,
-        proje_detay=:detay
-        WHERE proje_id=:proje_id"
-    );
-    $projeduzenle->execute(array(
-        'baslik' => $_POST['proje_baslik'],
-        'teslim_tarih' => $_POST['proje_teslim_tarihi'],
-        'aciliyet' => $_POST['proje_aciliyet'],
-        'durum' => $_POST['proje_durum'],
-        'detay' => $_POST['proje_detay'],
-        'proje_id' => $_POST['proje_id']
-    ));
-
-    echo json_encode(['durum'=>'ok','mesaj'=>'Proje güncellendi']);
-    exit;
-}
-
-
-
-
-?>

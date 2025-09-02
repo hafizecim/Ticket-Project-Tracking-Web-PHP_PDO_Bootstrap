@@ -1,5 +1,5 @@
 <?php include 'islemler/baglan.php';
-$ayarsor = $db->prepare("SELECT * FROM ayarlar");
+$ayarsor = $db->prepare("SELECT * FROM sites");
 $ayarsor->execute();
 $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
 ?>
@@ -12,12 +12,12 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="<?php echo $ayarcek['site_aciklama'] ?>">
-    <meta name="author" content="<?php echo $ayarcek['site_sahibi'] ?>">
+    <meta name="description" content="<?php echo $ayarcek['site_description'] ?>">
+    <meta name="author" content="<?php echo $ayarcek['site_owner_user_id'] ?>">
     <!-- <link rel="shortcut icon" type="image/png" href="<?php echo $ayarcek['site_logo'] ?>"> -->
 
 
-    <title><?php echo $ayarcek['site_baslik'] ?></title>
+    <title><?php echo $ayarcek['site_title'] ?></title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">

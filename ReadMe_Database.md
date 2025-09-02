@@ -101,7 +101,9 @@ CREATE TABLE sites (
     site_title VARCHAR(255) NOT NULL,
     site_description TEXT,
     site_owner_user_id INT NOT NULL,
+    site_owner_name VARCHAR(100) NOT NULL,
     site_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     site_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (site_owner_user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
+
