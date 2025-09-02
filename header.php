@@ -1,34 +1,3 @@
-<?php
-include 'islemler/baglan.php';
-
-// oturum açma işlemleri güvenlik önlemleri
-ob_start();
-session_start();
-
-// veri tabaınından veri çekme işlemi
-$ayarsor=$db->prepare("SELECT * FROM ayarlar");
-$ayarsor->execute();
-$ayarcek=$ayarsor->fetch(PDO::FETCH_ASSOC);
-
-if (empty($_SESSION['kul_mail'])){
-    header("location:giris.php");
-    exit; // exit in altındaki hiçbir kod çalışmaz
-}else{
-     $kullanicisor=$db->prepare("SELECT * FROM kullanici WHERE kul_mail=:mail");
-    $kullanicisor->execute(array(
-      'mail'=> $_SESSION['kul_mail']
-    ));
-     $sonuc=$kullanicisor->rowCount();
-     
-     if ($sonuc==0) {
-        header("location:giris.php");
-     }
-
-}
-
-?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,7 +9,7 @@ if (empty($_SESSION['kul_mail'])){
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title><?php echo $ayarcek['site_baslik'] ?></title> <!-- site_baslik veri tabaınından çekiliyor php ile -->
+    <title>SB Admin 2 - Dashboard</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -50,8 +19,6 @@ if (empty($_SESSION['kul_mail'])){
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-
-    <script src="vendor/jquery/jquery.min.js"></script>
 
 </head>
 
@@ -68,17 +35,17 @@ if (empty($_SESSION['kul_mail'])){
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-2">Hoşgeldin <?php echo $ayarcek['site_sahibi'] ?></div>
+                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
             </a>
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
-            <!-- Nav Item - Ana Sayfa -->
+            <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.php">
+                <a class="nav-link" href="index.html">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Ana Sayfa</span></a>
+                    <span>Dashboard</span></a>
             </li>
 
             <!-- Divider -->
@@ -86,38 +53,40 @@ if (empty($_SESSION['kul_mail'])){
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Bölümler
+                Interface
             </div>
 
-            <!-- Nav Item - Proje İşlemleri Menu -->
+            <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-cog"></i>
-                    <span>Projeler</span>
+                    <span>Components</span>
                 </a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Proje İşlemleri:</h6>
-                        <a class="collapse-item" href="projeekle.php">Proje Ekle</a>
-                        <a class="collapse-item" href="projeler.php">Projeler</a>
+                        <h6 class="collapse-header">Custom Components:</h6>
+                        <a class="collapse-item" href="buttons.html">Buttons</a>
+                        <a class="collapse-item" href="cards.html">Cards</a>
                     </div>
                 </div>
             </li>
 
-            <!-- Nav Item - Siparişler İşlemleri Menu -->
+            <!-- Nav Item - Utilities Collapse Menu -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
                     <i class="fas fa-fw fa-wrench"></i>
-                    <span>Siparişler</span>
+                    <span>Utilities</span>
                 </a>
                 <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                     data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Sipariş İşlemleri:</h6>
-                        <a class="collapse-item" href="siparisekle.php">Sipariş Ekle</a>
-                        <a class="collapse-item" href="siparisler.php">Siparişler</a>
+                        <h6 class="collapse-header">Custom Utilities:</h6>
+                        <a class="collapse-item" href="utilities-color.html">Colors</a>
+                        <a class="collapse-item" href="utilities-border.html">Borders</a>
+                        <a class="collapse-item" href="utilities-animation.html">Animations</a>
+                        <a class="collapse-item" href="utilities-other.html">Other</a>
                     </div>
                 </div>
             </li>
@@ -127,7 +96,7 @@ if (empty($_SESSION['kul_mail'])){
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Tüm Sayfalar
+                Addons
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
@@ -135,33 +104,34 @@ if (empty($_SESSION['kul_mail'])){
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                     aria-expanded="true" aria-controls="collapsePages">
                     <i class="fas fa-fw fa-folder"></i>
-                    <span>Sayfalar</span>
+                    <span>Pages</span>
                 </a>
                 <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Proje Sayfaları:</h6>
-                        <a class="collapse-item" href="projeler.php">Projeler</a>
-                        <a class="collapse-item" href="projeekle">Proje Ekle</a>
+                        <h6 class="collapse-header">Login Screens:</h6>
+                        <a class="collapse-item" href="login.html">Login</a>
+                        <a class="collapse-item" href="register.html">Register</a>
+                        <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
                         <div class="collapse-divider"></div>
-                        <h6 class="collapse-header">Sipariş Sayfaları:</h6>
-                        <a class="collapse-item" href="siparisler.php">Siparişler</a>
-                        <a class="collapse-item" href="siparisekle.php">Sipariş Ekle</a>
+                        <h6 class="collapse-header">Other Pages:</h6>
+                        <a class="collapse-item" href="404.html">404 Page</a>
+                        <a class="collapse-item" href="blank.html">Blank Page</a>
                     </div>
                 </div>
             </li>
 
-            <!-- Nav Item - Ayarlar -->
+            <!-- Nav Item - Charts -->
             <li class="nav-item">
-                <a class="nav-link" href="ayarlar.php">
+                <a class="nav-link" href="charts.html">
                     <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Ayarlar</span></a>
+                    <span>Charts</span></a>
             </li>
 
             <!-- Nav Item - Tables -->
             <li class="nav-item">
-                <a class="nav-link" href="projeler.php">
+                <a class="nav-link" href="tables.html">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Tablolar</span></a>
+                    <span>Tables</span></a>
             </li>
 
             <!-- Divider -->
@@ -360,29 +330,29 @@ if (empty($_SESSION['kul_mail'])){
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $ayarcek['site_sahibi']?></span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
                                 <img class="img-profile rounded-circle"
-                                    src="img/undraw_profile_3.svg">
+                                    src="img/undraw_profile.svg">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profil
+                                    Profile
                                 </a>
-                                <a class="dropdown-item" href="ayarlar.php">
+                                <a class="dropdown-item" href="#">
                                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Ayarlar
+                                    Settings
                                 </a>
                                 <a class="dropdown-item" href="#">
                                     <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Etkinlik Günlüğü
+                                    Activity Log
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="islemler/cikis.php" data-toggle="modal" data-target="#logoutModal">
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Çıkış
+                                    Logout
                                 </a>
                             </div>
                         </li>
@@ -391,7 +361,5 @@ if (empty($_SESSION['kul_mail'])){
 
                 </nav>
                 <!-- End of Topbar -->
-            <!-- </div> --> 
+            </div>
             <!-- End of Main Content -->
-
-            

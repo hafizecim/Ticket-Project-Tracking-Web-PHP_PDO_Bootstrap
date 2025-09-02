@@ -1,5 +1,4 @@
-<?php 
-include 'islemler/baglan.php';
+<?php include 'islemler/baglan.php';
 $ayarsor = $db->prepare("SELECT * FROM sites");
 $ayarsor->execute();
 $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
@@ -17,6 +16,7 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
     <meta name="author" content="<?php echo $ayarcek['site_owner_name'] ?>">
     <!-- <link rel="shortcut icon" type="image/png" href="<?php echo $ayarcek['site_logo'] ?>"> -->
 
+
     <title><?php echo $ayarcek['site_title'] ?></title>
 
     <!-- Custom fonts for this template-->
@@ -31,6 +31,7 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
     <style>
         body {
             background: linear-gradient(to right, #4e73df, #ffffff);
+            /* Mavi tonlarında gradyan */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -55,8 +56,11 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
 
         .btn-gradient {
             background: linear-gradient(to right,  #829be9ff, #244792ff);
+            /* Aynı gradyanı butona uygula */
             color: #fff;
+            /* Yazı rengini beyaz yap */
             border: none;
+            /* Varsayılan kenarlığı kaldır */
         }
     </style>
 
@@ -73,7 +77,7 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
                     <form class="user" action="islemler/islem.php" method="POST">
                         <div class="form-group">
                             <input name="kul_mail" required type="text" class="form-control form-control-user"
-                                id="exampleInputEmail" aria-describedby="emailHelp" placeholder="E-Mail">
+                                id="exampleInputEmail" aria-describedby="emailHelp" placeholder=" E-Mail ">
                         </div>
                         <div class="form-group">
                             <input type="password" required name="kul_sifre" class="form-control form-control-user"
@@ -89,5 +93,3 @@ $ayarcek = $ayarsor->fetch(PDO::FETCH_ASSOC);
         </div>
 
     </div>
-</body>
-</html>
